@@ -10,12 +10,12 @@ const migrationSemVerOptions = {};
 const ensureMigrationsTable = function (continueWith) {
   const abortWith = continueWith;
 
-  db.hasMigrationsTable({ name: migrationSemVerOptions.migrationsTableName }, (err, hasMigrationsTable) => {
+  db.hasMigrationsTable({}, (err, hasMigrationsTable) => {
     if (err) {
       return abortWith(err);
     }
     if (!hasMigrationsTable) {
-      db.createMigrationsTable({ name: migrationSemVerOptions.migrationsTableName }, errCreateMigrationsTable => {
+      db.createMigrationsTable({}, errCreateMigrationsTable => {
         if (errCreateMigrationsTable) {
           return abortWith(errCreateMigrationsTable);
         }
@@ -83,7 +83,6 @@ const applyMigration = function (options, continueWith) {
 /**
  *
  * @param {Object} options
- * @param {String} [options.migrationsTableName]
  * @param {String} [options.migrationsDirectory]
  * @param {Object} plugin
  * @constructor
@@ -91,7 +90,6 @@ const applyMigration = function (options, continueWith) {
 const MigrateSemVer = function (options, plugin) {
   db = plugin;
   migrationSemVerOptions.migrationsDirectory = options.migrationsDirectory;
-  migrationSemVerOptions.migrationsTableName = options.migrationsTableName || 'migrations';
 };
 
 MigrateSemVer.prototype.connect = function (options, continueWith) {
