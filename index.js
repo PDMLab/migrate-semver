@@ -22,6 +22,8 @@ const ensureMigrationsTable = function (continueWith) {
 
         return continueWith();
       });
+    } else {
+      continueWith();
     }
   });
 };

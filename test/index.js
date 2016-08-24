@@ -136,4 +136,40 @@ describe('Migrations', () => {
       });
     });
   });
+
+  describe('When running migration from existing migration table from 0.1.0 to 0.2.0', () => {
+    it('should contain 2 migrations in migrations table', done => {
+      let version = '0.1.0';
+      const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0-0.2.0');
+      const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+      migrateSemVer.connect({}, err => { // eslint-disable-line
+        migrateSemVer.up({ version }, err => { // eslint-disable-line
+          assert.equal(migrations[0].version, version);
+          version = '0.2.0';
+          migrateSemVer.up({ version }, err => { // eslint-disable-line
+            assert.equal(migrations[1].version, version);
+            done();
+          });
+        });
+      });
+    });
+
+    it('should create 4 tables in database', done => {
+      let version = '0.1.0';
+      const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0-0.2.0');
+      const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+      migrateSemVer.connect({}, err => { // eslint-disable-line
+        migrateSemVer.up({ version }, err => { // eslint-disable-line
+          version = '0.2.0';
+          assert.equal(tables.length, 3);
+          migrateSemVer.up({ version }, err => { // eslint-disable-line
+            assert.equal(tables.length, 4);
+            done();
+          });
+        });
+      });
+    });
+  });
 });
