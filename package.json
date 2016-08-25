@@ -1,6 +1,6 @@
 {
   "name": "migrate-semver",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Database agnostic migrations based on SemVer",
   "main": "index.js",
   "directories": {
