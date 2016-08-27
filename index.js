@@ -96,6 +96,31 @@ MigrateSemVer.prototype.connect = function (options, continueWith) {
   db.connect(options, continueWith);
 };
 
+/**
+ *
+ * @param {Object} options
+ * @param {String} options.version
+ * @param continueWith
+ */
+MigrateSemVer.prototype.canMigrate = function (options, continueWith) {
+  const abortWith = continueWith;
+  const migrationFilePath = path.join(migrationSemVerOptions.migrationsDirectory, options.version, 'index-up.js');
+
+  fs.stat(migrationFilePath, err => {
+    let exists = false;
+
+    if (err === null) {
+      exists = true;
+
+      return continueWith(null, exists);
+    } else if (err.code === 'ENOENT') {
+      return continueWith(null, exists);
+    }
+
+    return abortWith(err);
+  });
+};
+
 const getAvailableMigrationsOrdered = function (continueWith) {
   const abortWith = continueWith;
   const availableMigrations = [];

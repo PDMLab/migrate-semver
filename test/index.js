@@ -80,6 +80,57 @@ describe('Migrations', () => {
     });
   });
 
+  describe('When asking whether migration can be done (migration folder + file exist)', () => {
+    beforeEach(done => {
+      done();
+    });
+
+    describe('When migration folder does not exist', () => {
+      it('should return false', done => {
+        const version = '0.1.0';
+        const migrationsDirectory = path.join(__dirname, 'migrations');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, false);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('When migration folder exists without migration file', () => {
+      it('should return false', done => {
+        const version = '0.1.0';
+        const migrationsDirectory = path.join(__dirname, 'migrations', 'empty');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, false);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('When migration folder exists with migration file', () => {
+      it('should return true', done => {
+        const version = '0.1.0';
+        const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, true);
+            done();
+          });
+        });
+      });
+    });
+  });
+
   describe('When running migration from no tables to 0.1.0 with no migrations table existing', () => {
     it('should contain migration in migrations table', done => {
       const version = '0.1.0';

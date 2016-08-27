@@ -15,13 +15,13 @@ npm install --save migrate-semver
 The following example runs a migration for version `0.3.0`.
 
 ```js
-let version = '0.3.0';
+const version = '0.3.0';
 const migrationsDirectory = path.join(__dirname, 'migrations');
 const migrateSemVer = new SemVerMigration({ migrationsDirectory }, plugin());
 
 migrateSemVer.connect({}, err => {
   migrateSemVer.up({ version }, err => {
-    assert.equal(migrations[1].version, version);
+    assert.equal(migrations[2].version, version);
     done();
   });
 });
@@ -49,6 +49,25 @@ The file and folder structure has to follow this convention (the `index-up.js` c
   - 0.3.0 
     - index-up.js
 </pre>
+
+If you want to automate your migrations, your code triggering the migrations can check whether an migration for a particular version can be done using the `migrateSemVer.canMigrate({ version })` function:
+
+```js
+const version = '0.3.0';
+
+migrateSemVer.connect({}, err => {
+  migrateSemVer.canMigrate({ version }, (err, canMigrate) => {
+    if (canMigrate) {
+      migrateSemVer.up({ version }, err => {
+        assert.equal(migrations[2].version, version);
+        done();
+      });
+    }
+  });
+});
+```
+
+If you don't do this sane check and the migration file or directory won't exist, you'll receive an error during when trying to run the migration. 
 
 ## Plugins
 
