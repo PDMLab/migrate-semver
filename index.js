@@ -297,7 +297,14 @@ MigrateSemVer.prototype.up = function (options, continueWith) {
  * @param continueWith
  */
 MigrateSemVer.prototype.hasMigration = function (options, continueWith) {
-  hasMigration(options, continueWith);
+  const abortWith = continueWith;
+
+  ensureMigrationsTable(err => {
+    if (err) {
+      return abortWith(err);
+    }
+    hasMigration(options, continueWith);
+  });
 };
 
 module.exports = MigrateSemVer;
