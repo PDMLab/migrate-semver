@@ -70,6 +70,17 @@ migrateSemVer.connect({}, err => {
 ```
 
 If you don't do this sane check and the migration file or directory won't exist, you'll receive an error during when trying to run the migration.
+
+### hasMigration
+
+The `hasMigration` function allows you to check up front, if `migrate-semver` has applied a particular migration already:
+
+```js
+migrateSemVer.hasMigration({ version, direction: 'up' }, (err, hasMigration) => { 
+  assert.equal(hasMigration, true);
+  done();
+});
+```
  
 ### customOptions
 

@@ -147,9 +147,15 @@ describe('Migrations', () => {
       const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
 
       migrateSemVer.connect({}, err => { // eslint-disable-line
-        migrateSemVer.up({ version, customOptions: { numberOfTables : 3 } }, err => { // eslint-disable-line
-          assert.equal(migrations[0].version, version);
-          done();
+        migrateSemVer.hasMigration({ version, direction: 'up' }, (err, hasMigration) => { // eslint-disable-line
+          assert.equal(hasMigration, false);
+          migrateSemVer.up({ version, customOptions: { numberOfTables: 3 } }, err => { // eslint-disable-line
+            assert.equal(migrations[0].version, version);
+            migrateSemVer.hasMigration({ version, direction: 'up' }, (err, hasMigrationAfterRun) => { // eslint-disable-line
+              assert.equal(hasMigrationAfterRun, true);
+              done();
+            });
+          });
         });
       });
     });

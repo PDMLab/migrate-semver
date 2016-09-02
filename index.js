@@ -290,4 +290,14 @@ MigrateSemVer.prototype.up = function (options, continueWith) {
   });
 };
 
+/**
+ * @param {Object} options
+ * @param {String} options.version
+ * @param {String} options.direction
+ * @param continueWith
+ */
+MigrateSemVer.prototype.hasMigration = function (options, continueWith) {
+  hasMigration(options, continueWith);
+};
+
 module.exports = MigrateSemVer;
