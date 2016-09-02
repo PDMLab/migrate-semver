@@ -44,11 +44,20 @@ const fakePlugin = function () {
   };
 
   const up = function (options, continueWith) {
+    let numberOfTables;
+
+    if (options.customOptions) {
+      numberOfTables = options.customOptions.numberOfTables;
+    }
     const migrationsDirectory = options.migrationsDirectory;
     const migrationPath = path.join(migrationsDirectory, options.version, 'index-up');
     const migration = require(migrationPath); // eslint-disable-line
 
-    migration.up(tables, continueWith);
+    if (numberOfTables) {
+      migration.up(tables, numberOfTables, continueWith);
+    } else {
+      migration.up(tables, continueWith);
+    }
   };
 
   return {
@@ -138,7 +147,7 @@ describe('Migrations', () => {
       const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
 
       migrateSemVer.connect({}, err => { // eslint-disable-line
-        migrateSemVer.up({ version }, err => { // eslint-disable-line
+        migrateSemVer.up({ version, customOptions: { numberOfTables : 3 } }, err => { // eslint-disable-line
           assert.equal(migrations[0].version, version);
           done();
         });

@@ -50,6 +50,8 @@ The file and folder structure has to follow this convention (the `index-up.js` c
     - index-up.js
 </pre>
 
+### canMigrate
+
 If you want to automate your migrations, your code triggering the migrations can check whether an migration for a particular version can be done using the `migrateSemVer.canMigrate({ version })` function:
 
 ```js
@@ -67,7 +69,19 @@ migrateSemVer.connect({}, err => {
 });
 ```
 
-If you don't do this sane check and the migration file or directory won't exist, you'll receive an error during when trying to run the migration. 
+If you don't do this sane check and the migration file or directory won't exist, you'll receive an error during when trying to run the migration.
+ 
+### customOptions
+
+You can pass custom options to the `up` function as child object of the `options` parameter.
+These `customOptions` will be passed into the plugin and if the plugin handles them appropriately, they'll be passed into every migration (the 'how' depends on the particular plugin).
+ 
+```js
+migrateSemVer.up({ version, customOptions }, err => {
+  assert.equal(migrations[2].version, version);
+  done();
+});
+```
 
 ## Plugins
 
@@ -116,6 +130,7 @@ const plugin = function(options, callback) {
   * @param {Object} options
   * @param {String} options.version
   * @param {String} options.migrationsDirectory
+  * @param {Object} [options.customOptions]
   */
   const up = function (options, continueWith) {
     const migrationsDirectory = options.migrationsDirectory;

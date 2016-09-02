@@ -45,6 +45,7 @@ const hasMigration = function (options, continueWith) {
  * @param {Object} options
  * @param {String} options.version
  * @param {String} options.direction
+ * @param {Object} [options.customOptions]
  * @param continueWith
  */
 const applyMigration = function (options, continueWith) {
@@ -70,7 +71,8 @@ const applyMigration = function (options, continueWith) {
     case 'up' : {
       db.up({
         version: options.version,
-        migrationsDirectory: migrationSemVerOptions.migrationsDirectory
+        migrationsDirectory: migrationSemVerOptions.migrationsDirectory,
+        customOptions: options.customOptions
       }, migrationDone);
       break;
     }
@@ -209,14 +211,16 @@ const getUnAppliedMigrations = function (options, continueWith) {
 /**
  * @param {Object} options
  * @param {Array<String>} options.migrations
+ * @param {Object} [options.customOptions]
  * @param continueWith
  */
 const applyMigrations = function (options, continueWith) {
   const abortWith = continueWith;
   const unAppliedMigrations = options.migrations;
+  const customOptions = options.customOptions;
 
   async.forEachOfSeries(unAppliedMigrations, (migration, key, done) => {
-    applyMigration({ version: migration, direction: 'up' }, errApplyMigration => {
+    applyMigration({ version: migration, direction: 'up', customOptions }, errApplyMigration => {
       if (errApplyMigration) {
         return abortWith(errApplyMigration);
       }
@@ -236,13 +240,16 @@ const applyMigrations = function (options, continueWith) {
  *
  * @param {Object} options
  * @param {String} options.version
+ * @param {Object} [options.customOptions]
  * @param continueWith
  */
 MigrateSemVer.prototype.up = function (options, continueWith) {
   const abortWith = continueWith;
+  const customOptions = options.customOptions;
   const migrationOptions = {
     version: options.version,
-    direction: 'up'
+    direction: 'up',
+    customOptions
   };
 
   ensureMigrationsTable(err => {
@@ -267,7 +274,7 @@ MigrateSemVer.prototype.up = function (options, continueWith) {
               return continueWith();
             });
           } else {
-            applyMigrations({ migrations: unAppliedMigrations }, errApplyMigrations => {
+            applyMigrations({ migrations: unAppliedMigrations, customOptions }, errApplyMigrations => {
               if (errApplyMigrations) {
                 return abortWith(errApplyMigrations);
               }
