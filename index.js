@@ -107,6 +107,11 @@ MigrateSemVer.prototype.connect = function (options, continueWith) {
 MigrateSemVer.prototype.canMigrate = function (options, continueWith) {
   const abortWith = continueWith;
   const migrationFilePath = path.join(migrationSemVerOptions.migrationsDirectory, options.version, 'index-up.js');
+  const initVersion = process.env.INIT_VERSION;
+
+  if (initVersion && initVersion === options.version) {
+    return continueWith(null, false);
+  }
 
   fs.stat(migrationFilePath, err => {
     let exists = false;

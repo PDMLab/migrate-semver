@@ -138,6 +138,53 @@ describe('Migrations', () => {
         });
       });
     });
+
+    describe('When migration folder exists with migration file and ENV INIT_VERSION === available migration' , () => {
+      it('should return false', done => {
+        const version = '0.1.0';
+        process.env.INIT_VERSION = '0.1.0';
+        const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, false);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('When migration folder exists with migration file and ENV INIT_VERSION !== available migration' , () => {
+      it('should return false', done => {
+        const version = '0.1.0';
+        process.env.INIT_VERSION = '0.0.1';
+        const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, true);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('When migration folder exists with migration file and ENV INIT_VERSION not set' , () => {
+      it('should return false', done => {
+        const version = '0.1.0';
+        const migrationsDirectory = path.join(__dirname, 'migrations', 'none-0.1.0');
+        const migrateSemVer = new SemVerMigration({ migrationsDirectory }, fakePlugin());
+
+        migrateSemVer.connect({}, err => { // eslint-disable-line
+          migrateSemVer.canMigrate({ version }, (err, canMigrate) => { // eslint-disable-line
+            assert.equal(canMigrate, true);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('When running migration from no tables to 0.1.0 with no migrations table existing', () => {
